@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>污泥濃縮與脫水設計計算 | Sludge Thickening and Dewatering Design</title>
+<script src="https://yj-chen0830.github.io/jrh-core/jrh-core.js?v=3" defer></script>
+<style>
+  :root{--navy:#0b1f3a;--navy2:#13284a;--gold:#c9a14a;--gold2:#e0bf6e;--bg:#f5f3ee;--ink:#1c2530;--line:#d8d2c2;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:"Noto Sans TC","Segoe UI",sans-serif;background:var(--bg);color:var(--ink);}
+  header{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#f5f3ee;padding:28px 32px;}
+  header h1{margin:0;font-size:22px;}
+  header span{color:var(--gold2);font-size:13px;display:block;margin-top:4px;}
+  main{max-width:1120px;margin:0 auto;padding:28px 20px 60px;}
+  .grid{display:grid;grid-template-columns:340px 1fr;gap:24px;}
+  @media(max-width:860px){.grid{grid-template-columns:1fr;}}
+  .card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:22px 24px;box-shadow:0 2px 8px rgba(0,0,0,.05);}
+  .card h2{font-size:14.5px;margin:0 0 18px;color:var(--navy);font-weight:700;display:flex;align-items:center;gap:8px;border-bottom:2px solid var(--gold);padding-bottom:10px;}
+  label{display:block;font-size:12px;color:#666;margin:10px 0 4px;font-weight:500;}
+  input{width:100%;padding:8px 11px;border:1.5px solid var(--line);border-radius:7px;font-size:13.5px;background:#fafaf8;}
+  input:focus{outline:none;border-color:var(--gold);}
+  .sec{font-size:12px;font-weight:700;color:var(--navy);margin:16px 0 6px;border-left:4px solid var(--gold);padding-left:9px;letter-spacing:.04em;text-transform:uppercase;}
+  .note{font-size:11.5px;color:#666;margin-top:12px;line-height:1.75;background:#f9f7f2;border-radius:6px;padding:9px 12px;}
+  .eq-note{font-size:11px;color:#8b7a54;margin-top:4px;line-height:1.5;}
+  button.calc-btn{margin-top:16px;width:100%;padding:12px;border:none;border-radius:8px;background:var(--navy);color:#fff;font-size:14.5px;font-weight:700;cursor:pointer;}
+  button.calc-btn:hover{background:var(--navy2);}
+  button.pro-btn{margin-top:12px;width:100%;padding:12px;border:none;border-radius:8px;background:var(--gold);color:var(--navy);font-size:14.5px;font-weight:700;cursor:pointer;}
+  button.pro-btn:hover{filter:brightness(1.08);}
+  table{width:100%;border-collapse:collapse;margin-top:10px;border:1px solid var(--line);border-radius:8px;overflow:hidden;}
+  th{background:var(--navy);color:#f5f3ee;font-weight:600;font-size:12px;padding:9px 10px;text-align:left;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  td{padding:9px 10px;font-size:13px;border-bottom:1px solid var(--line);vertical-align:top;}
+  tr:nth-child(even) td{background:#f9f7f3;}
+  td:last-child{text-align:right;font-weight:700;}
+  details.proc{margin-top:16px;border:1px solid var(--line);border-radius:8px;background:#fafaf8;overflow:hidden;}
+  details.proc summary{cursor:pointer;padding:10px 14px;font-weight:700;font-size:13px;color:var(--navy);user-select:none;list-style:none;display:flex;align-items:center;gap:6px;}
+  details.proc summary::before{content:"▶";font-size:10px;transition:transform .2s;}
+  details[open].proc summary::before{transform:rotate(90deg);}
+  details.proc pre{margin:0;padding:12px 16px 16px;font-family:"Courier New",monospace;font-size:11.5px;line-height:1.9;white-space:pre-wrap;color:#2c3e50;border-top:1px solid var(--line);}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .proj-section{background:#fff;border:1px solid var(--gold);border-radius:10px;padding:18px 22px;margin-bottom:20px;}
+  .proj-section h3{margin:0 0 12px;color:var(--navy);font-size:14px;font-weight:700;}
+  .proj-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  @media(max-width:600px){.proj-grid,.row2{grid-template-columns:1fr;}}
+  .mob-tabs{display:none;}
+  .result-block+.result-block{margin-top:22px;padding-top:18px;border-top:2px dashed var(--line);}
+  .mass-balance{margin-top:12px;padding:12px 14px;border-radius:8px;background:#f7f2e5;border:1px solid #ead7a8;font-size:12px;line-height:1.75;}
+  @media screen and (max-width:767px){
+    .mob-tabs{display:flex;background:var(--bg);border-bottom:2px solid var(--line);margin:0 -20px 0;padding:0 20px;}
+    .mob-tab{flex:1;padding:11px 4px;text-align:center;font-size:13.5px;font-weight:700;color:#888;cursor:pointer;background:transparent;border:none;border-bottom:3px solid transparent;}
+    .mob-tab.active{color:var(--navy);border-bottom-color:var(--gold);}
+    .grid{display:block;}
+    .grid>.card{display:none;}
+    .grid>.card.mob-active{display:block;}
+  }
+  @media print{
+    header,.no-print{display:none!important;}
+    body{background:#fff;margin:0;font-size:9pt;line-height:1.5;color:#111;}
+    main{padding:0;max-width:100%!important;}
+    .grid{grid-template-columns:1fr!important;gap:10pt!important;}
+    .card{box-shadow:none!important;border:1px solid #ccc!important;border-radius:4pt!important;padding:10pt 12pt!important;break-inside:avoid;}
+    .card h2{font-size:10.5pt!important;padding-bottom:6pt!important;margin-bottom:9pt!important;}
+    label{font-size:8pt!important;margin:6pt 0 2pt!important;}
+    .sec{font-size:8pt!important;margin:10pt 0 4pt!important;}
+    .note,.eq-note,.mass-balance{font-size:7.5pt!important;padding:6pt 9pt!important;}
+    table{border:1px solid #bbb!important;border-radius:0!important;margin-top:6pt!important;}
+    th{font-size:8pt!important;padding:5pt 7pt!important;background:#0b1f3a!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    td{font-size:8.5pt!important;padding:5pt 7pt!important;}
+    tr:nth-child(even) td{background:#f5f5f5!important;}
+    details.proc{display:block!important;margin-top:10pt!important;border:1pt solid #0b1f3a!important;border-radius:4pt!important;break-inside:avoid;background:#f9f9f6!important;}
+    details.proc>summary{display:none!important;}
+    details.proc::before{content:"📋  計算過程（供第三方檢核）";display:block;font-weight:700;font-size:8pt;color:#0b1f3a;padding:6pt 10pt 4pt;border-bottom:1px solid #ccc;letter-spacing:.04em;}
+    details.proc>pre{font-size:7pt!important;line-height:1.65!important;white-space:pre-wrap!important;padding:6pt 10pt 10pt!important;color:#1a1a1a!important;font-family:"Courier New",monospace!important;}
+    .proj-section{border:1.5pt solid #0b1f3a!important;border-radius:4pt!important;}
+    button.pro-btn,button.calc-btn{display:none!important;}
+    @page{margin:15mm 12mm;size:A4;}
+  }
+</style>
+</head>
+<body data-tool="std">
+<header>
+  <a href="https://yj-chen0830.github.io/engineering-hub/" style="color:var(--gold2);font-size:12.5px;text-decoration:none;display:inline-block;margin-bottom:8px;">← 返回工程計算中心</a>
+  <h1>🧴 污泥濃縮與脫水設計</h1>
+  <span>Metcalf &amp; Eddy 標準污泥處理設計法 · 重力濃縮池 · 帶式壓濾機</span>
+</header>
+<main>
+
+<div class="proj-section no-print" id="projSection">
+  <h3>📁 專案資訊（列印時帶入計算書封面）</h3>
+  <div class="proj-grid">
+    <div><label>工程名稱</label><input id="pj-name" placeholder="○○污水處理廠改善工程"></div>
+    <div><label>工程地點</label><input id="pj-loc" placeholder="○○市○○區"></div>
+    <div><label>承造廠商</label><input id="pj-contractor" placeholder="○○環工股份有限公司"></div>
+    <div><label>文件編號</label><input id="pj-docno" placeholder="STD-CAL-001"></div>
+    <div><label>計算者</label><input id="pj-calc" placeholder="姓名"></div>
+    <div><label>審核者</label><input id="pj-review" placeholder="姓名"></div>
+    <div><label>計算日期</label><input id="pj-date" type="date"></div>
+  </div>
+</div>
+
+<div class="mob-tabs">
+  <button class="mob-tab active" onclick="switchMobTab('std-in',this)">📋 輸入參數</button>
+  <button class="mob-tab" id="mobTab-std-r" onclick="switchMobTab('std-r',this)">📊 計算結果</button>
+</div>
+
+<div class="grid">
+  <div class="card mob-active" data-tab="std-in">
+    <h2>設計輸入參數</h2>
+
+    <div class="sec">重力濃縮池 Gravity Thickener</div>
+    <div class="row2">
+      <div><label>污泥產量 Ws (kg TSS/day)</label><input id="std-Ws" type="number" value="500" step="10" min="1"></div>
+      <div><label>進流污泥濃度 Cin (%)</label><input id="std-Cin" type="number" value="0.8" step="0.1" min="0.01"></div>
+    </div>
+    <div class="row2">
+      <div><label>固體負荷率 SLR (kg/m²/day)</label><input id="std-SLR" type="number" value="25" step="1" min="1"></div>
+      <div><label>濃縮後污泥濃度 Cout (%)</label><input id="std-Cout" type="number" value="4" step="0.1" min="0.1"></div>
+    </div>
+    <div class="eq-note">常用初步設計值：SLR 約 20~30 kg/m²/day；濃縮後濃度可先取 4%。</div>
+
+    <div class="sec">帶式壓濾機 Belt Filter Press</div>
+    <div class="row2">
+      <div><label>固體通量負荷 SF (kg/m/hr)</label><input id="std-SF" type="number" value="250" step="10" min="1"></div>
+      <div><label>泥餅濃度 Ccake (%)</label><input id="std-Ccake" type="number" value="22" step="0.5" min="1"></div>
+    </div>
+    <div class="row2">
+      <div><label>每日運轉時數 t_op (hr/day)</label><input id="std-top" type="number" value="8" step="0.5" min="0.1"></div>
+      <div><label>泥餅比重 SGcake</label><input id="std-SGcake" type="number" value="1.05" step="0.01" min="0.5"></div>
+    </div>
+    <div class="eq-note">常用初步設計值：SF 約 200~300 kg/m/hr；泥餅濃度可先取 22%。</div>
+
+    <button class="calc-btn" onclick="calcSTD()">計算污泥濃縮與脫水需求</button>
+    <div class="note">本工具採題示之 Metcalf &amp; Eddy 標準污泥處理設計法簡化式，假設污泥比重約 1.0、泥餅比重預設 1.05。質量平衡以乾固體量 Ws 恆定為前提，濃縮與脫水僅改變含水率與體積流量，適用於初步設計估算。</div>
+  </div>
+
+  <div class="card" data-tab="std-r">
+    <h2>計算結果</h2>
+    <div id="std-result"><p style="color:#888">尚未計算</p></div>
+
+    <details class="proc" id="std-proc-thickener" style="display:none">
+      <summary>📋 重力濃縮池計算過程（供第三方檢核）</summary>
+      <pre id="std-proc-thickener-text"></pre>
+    </details>
+
+    <details class="proc" id="std-proc-dewatering" style="display:none">
+      <summary>📋 帶式壓濾機計算過程（供第三方檢核）</summary>
+      <pre id="std-proc-dewatering-text"></pre>
+    </details>
+
+    <button class="pro-btn no-print" onclick="openPro()">📄 產出計算書 PDF</button>
+  </div>
+</div>
+
+</main>
+<script>
+function switchMobTab(name,btn){
+  btn.parentElement.querySelectorAll('.mob-tab').forEach(function(t){t.classList.remove('active');});
+  btn.classList.add('active');
+  btn.parentElement.nextElementSibling.querySelectorAll('.card').forEach(function(c){
+    c.classList.toggle('mob-active',c.dataset.tab===name);
+  });
+}
+function openPro(){ JRH.checkEmail(function(){ jrhPrint('污泥濃縮與脫水設計計算書'); }); }
+function v(id){return parseFloat(document.getElementById(id).value)||0;}
+function f1(x){return x.toFixed(1);}
+function f2(x){return x.toFixed(2);}
+function f3(x){return x.toFixed(3);}
+
+function calcSTD(){
+  var Ws=v('std-Ws');
+  var Cin=v('std-Cin');
+  var SLR=v('std-SLR');
+  var Cout=v('std-Cout');
+  var SF=v('std-SF');
+  var Ccake=v('std-Ccake');
+  var top=v('std-top');
+  var SGcake=v('std-SGcake');
+
+  if(Ws<=0||Cin<=0||SLR<=0||Cout<=0||SF<=0||Ccake<=0||top<=0||SGcake<=0){
+    document.getElementById('std-result').innerHTML='<p style="color:#b03a2e">所有輸入值皆需大於 0。</p>';
+    return;
+  }
+
+  var A=Ws/SLR;
+  var Qout=Ws/((Cout/100)*1000);
+  var Qin=Ws/((Cin/100)*1000);
+  var Qsuper=Qin-Qout;
+
+  var W=(Ws/top)/SF;
+  var Mcake=Ws/(Ccake/100);
+  var Vcake=Mcake/(SGcake*1000);
+
+  var waterIn=Qin*1000-Ws;
+  var waterThickened=Qout*1000-Ws;
+  var waterCake=Mcake-Ws;
+  var waterRemovedThickener=Qsuper*1000;
+  var waterRemovedDewatering=Qout*1000-Mcake;
+
+  document.getElementById('std-result').innerHTML=
+    '<div class="result-block">'+
+      '<h3 style="margin:0 0 10px;color:var(--navy);font-size:14px;">一、重力濃縮池</h3>'+
+      '<table><tr><th>項目</th><th>數值</th></tr>'+
+      '<tr><td>濃縮池表面積 A</td><td>'+f2(A)+' m²</td></tr>'+
+      '<tr><td>進流污泥體積流量 Qin</td><td>'+f2(Qin)+' m³/day</td></tr>'+
+      '<tr><td>濃縮後污泥流量 Qout</td><td>'+f2(Qout)+' m³/day</td></tr>'+
+      '<tr><td>上澄液流量 Qsupernatant</td><td>'+f2(Qsuper)+' m³/day</td></tr>'+
+      '</table>'+
+    '</div>'+
+    '<div class="result-block">'+
+      '<h3 style="margin:0 0 10px;color:var(--navy);font-size:14px;">二、帶式壓濾機</h3>'+
+      '<table><tr><th>項目</th><th>數值</th></tr>'+
+      '<tr><td>所需帶寬 W</td><td>'+f3(W)+' m</td></tr>'+
+      '<tr><td>泥餅濕重 M_cake</td><td>'+f2(Mcake)+' kg/day</td></tr>'+
+      '<tr><td>泥餅體積 V_cake</td><td>'+f2(Vcake)+' m³/day</td></tr>'+
+      '</table>'+
+    '</div>'+
+    '<div class="mass-balance">'+
+      '<strong>質量平衡檢核：</strong><br>'+
+      '進流固體量 = 濃縮後固體量 = 脫水後固體量 = '+f2(Ws)+' kg TSS/day。<br>'+
+      '濃縮前含水量 = '+f2(waterIn)+' kg/day，濃縮後含水量 = '+f2(waterThickened)+' kg/day，泥餅含水量 = '+f2(waterCake)+' kg/day。<br>'+
+      '重力濃縮去除水量 = '+f2(waterRemovedThickener)+' kg/day；脫水機再去除水量 = '+f2(waterRemovedDewatering)+' kg/day。僅水分減少，乾固體量不變。'+
+    '</div>';
+
+  var p1='';
+  p1+='━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n';
+  p1+='  重力濃縮池設計計算過程\n';
+  p1+='━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n';
+  p1+='【輸入】\n';
+  p1+='  Ws = '+Ws+' kg TSS/day\n';
+  p1+='  Cin = '+Cin+' %\n';
+  p1+='  SLR = '+SLR+' kg/m²/day\n';
+  p1+='  Cout = '+Cout+' %\n\n';
+  p1+='【一】濃縮池所需表面積\n';
+  p1+='  A = Ws / SLR\n';
+  p1+='    = '+Ws+' / '+SLR+'\n';
+  p1+='    = '+f2(A)+' m²\n\n';
+  p1+='【二】濃縮後污泥體積流量\n';
+  p1+='  Qout = Ws / ((Cout/100) × 1000)\n';
+  p1+='       = '+Ws+' / (('+Cout+'/100) × 1000)\n';
+  p1+='       = '+Ws+' / '+f2((Cout/100)*1000)+'\n';
+  p1+='       = '+f2(Qout)+' m³/day\n\n';
+  p1+='【三】進流污泥體積流量\n';
+  p1+='  Qin = Ws / ((Cin/100) × 1000)\n';
+  p1+='      = '+Ws+' / (('+Cin+'/100) × 1000)\n';
+  p1+='      = '+Ws+' / '+f2((Cin/100)*1000)+'\n';
+  p1+='      = '+f2(Qin)+' m³/day\n\n';
+  p1+='【四】上澄液流量\n';
+  p1+='  Qsupernatant = Qin - Qout\n';
+  p1+='               = '+f2(Qin)+' - '+f2(Qout)+'\n';
+  p1+='               = '+f2(Qsuper)+' m³/day\n\n';
+  p1+='【五】質量平衡檢核\n';
+  p1+='  進流固體量 = Ws = '+f2(Ws)+' kg TSS/day\n';
+  p1+='  濃縮後固體量 = Qout × Cout × 1000 = '+f2(Qout)+' × '+(Cout/100).toFixed(3)+' × 1000 = '+f2(Ws)+' kg TSS/day\n';
+  p1+='  上澄液帶走者主要為水分：Qsupernatant × 1000 = '+f2(Qsuper)+' × 1000 = '+f2(waterRemovedThickener)+' kg/day\n';
+  p1+='  固體守恆成立，僅水分由 '+f2(waterIn)+' 降至 '+f2(waterThickened)+' kg/day\n';
+  p1+='━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━';
+
+  var p2='';
+  p2+='━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n';
+  p2+='  帶式壓濾機設計計算過程\n';
+  p2+='━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n';
+  p2+='【輸入】\n';
+  p2+='  Ws = '+Ws+' kg TSS/day\n';
+  p2+='  SF = '+SF+' kg/m/hr\n';
+  p2+='  Ccake = '+Ccake+' %\n';
+  p2+='  t_op = '+top+' hr/day\n';
+  p2+='  SGcake = '+SGcake+'\n\n';
+  p2+='【一】所需帶寬\n';
+  p2+='  W = (Ws / t_op) / SF\n';
+  p2+='    = ('+Ws+' / '+top+') / '+SF+'\n';
+  p2+='    = '+f2(Ws/top)+' / '+SF+'\n';
+  p2+='    = '+f3(W)+' m\n\n';
+  p2+='【二】泥餅濕重產量\n';
+  p2+='  M_cake = Ws / (Ccake/100)\n';
+  p2+='         = '+Ws+' / ('+Ccake+'/100)\n';
+  p2+='         = '+Ws+' / '+(Ccake/100).toFixed(3)+'\n';
+  p2+='         = '+f2(Mcake)+' kg/day\n\n';
+  p2+='【三】泥餅體積\n';
+  p2+='  V_cake = M_cake / (SGcake × 1000)\n';
+  p2+='         = '+f2(Mcake)+' / ('+SGcake+' × 1000)\n';
+  p2+='         = '+f2(Mcake)+' / '+f2(SGcake*1000)+'\n';
+  p2+='         = '+f2(Vcake)+' m³/day\n\n';
+  p2+='【四】質量平衡檢核\n';
+  p2+='  脫水後固體量 = M_cake × Ccake = '+f2(Mcake)+' × '+(Ccake/100).toFixed(3)+' = '+f2(Ws)+' kg TSS/day\n';
+  p2+='  泥餅含水量 = M_cake - Ws = '+f2(Mcake)+' - '+f2(Ws)+' = '+f2(waterCake)+' kg/day\n';
+  p2+='  脫水機去除水量 = 濃縮污泥總重 - 泥餅總重 = '+f2(Qout*1000)+' - '+f2(Mcake)+' = '+f2(waterRemovedDewatering)+' kg/day\n';
+  p2+='  進流固體量 = 濃縮後固體量 = 脫水後固體量 = '+f2(Ws)+' kg TSS/day，僅水分再減少\n';
+  p2+='━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━';
+
+  document.getElementById('std-proc-thickener-text').textContent=p1;
+  document.getElementById('std-proc-dewatering-text').textContent=p2;
+  document.getElementById('std-proc-thickener').style.display='';
+  document.getElementById('std-proc-dewatering').style.display='';
+
+  if(window.innerWidth<768){
+    var b=document.getElementById('mobTab-std-r');
+    if(b)switchMobTab('std-r',b);
+  }
+}
+
+window.addEventListener('DOMContentLoaded',function(){
+  calcSTD();
+});
+</script>
+<script>
+window.jrhDocMeta={
+  "doc":"污泥濃縮與脫水設計計算書",
+  "codes":[
+    "Metcalf & Eddy, Wastewater Engineering: Treatment and Resource Recovery",
+    "標準污泥處理設計法：重力濃縮池固體負荷率與帶式壓濾機固體通量初步估算"
+  ],
+  "notes":[
+    "本工具採題示簡化設計式，適用於污泥濃縮與脫水單元之初步尺度估算，不取代設備商保證值與正式細部設計。",
+    "重力濃縮池計算假設污泥比重約 1.0，故濃度換算採 1000 kg/m³；若污泥性質明顯偏離，應另行修正。",
+    "帶式壓濾機泥餅體積預設比重 1.05，若採其他設備或藥注條件，應以試驗或設備商資料校核。",
+    "質量平衡以前處理後乾固體量 Ws 恆定為前提，濃縮與脫水僅視為水分移除程序，不含固體流失、聚合劑增量或灰分修正。",
+    "正式工程設計仍應檢討備用台數、尖峰係數、操作彈性、聚合劑需求、設備標準模組尺寸與後續污泥清運需求。"
+  ]
+};
+</script>
+</body>
+</html>
